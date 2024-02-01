@@ -1,5 +1,8 @@
 import { Router } from 'express';
-import { getCards, createCard, deleteCard } from '../controllers/cards';
+
+import {
+  getCards, createCard, deleteCard, likeCard, dislikeCard,
+} from '../controllers/cards';
 
 const router = Router();
 
@@ -8,10 +11,10 @@ router.get('/', getCards);
 // POST /cards —  создаёт карточку
 router.post('/', createCard);
 // DELETE  /cards/:cardId - удаляет карточку по идентификатору
-router.delete('/:id', deleteCard);
+router.delete('/:cardId', deleteCard);
 // PUT /cards/:cardId/likes — поставить лайк карточке
-// router.patch('/:id/likes', createCard);
+router.patch('/:cardId/likes', likeCard);
 // DELETE /cards/:cardId/likes — убрать лайк с карточки
-// router.delete('/:id/likes', deleteCard);
+router.delete('/:cardId/likes', dislikeCard);
 
 export default router;
