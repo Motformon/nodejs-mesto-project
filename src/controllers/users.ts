@@ -16,4 +16,26 @@ export const createUser = (req: Request, res: Response) => {
   return User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
-}
+};
+
+export const patchUserProfile = (req: Request, res: Response) => {
+  const { name, about } = req.body;
+
+  // @ts-ignore
+  const userId = req.user._id;
+
+  return User.findByIdAndUpdate(userId, { name, about })
+    .then((user) => res.send({ data: user }))
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+};
+
+export const patchUserAvatar = (req: Request, res: Response) => {
+  const { avatar } = req.body;
+
+  // @ts-ignore
+  const userId = req.user._id;
+
+  return User.findByIdAndUpdate(userId, { avatar })
+    .then((user) => res.send({ data: user }))
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+};
