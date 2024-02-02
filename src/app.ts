@@ -1,5 +1,4 @@
 import express, { Request, Response, NextFunction } from 'express';
-// import path from 'path';
 import mongoose from 'mongoose';
 import usersRouter from './routes/users';
 import cardsRouter from './routes/cards';
@@ -24,11 +23,10 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
 
-// app.use(express.static(path.join(__dirname, 'public')));
-
 // здесь обрабатываем все ошибки
 app.use((err: any, req: Request, res: Response) => {
   // если у ошибки нет статуса, выставляем 500
+
   const { statusCode = 500, message } = err;
 
   res
