@@ -1,24 +1,28 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 
 import User from '../models/user';
 
-export const getUsers = (req: Request, res: Response) => User.find({})
+export const getUsers = (req: Request, res: Response, next: NextFunction) => User.find({})
   .then((users) => res.send({ data: users }))
-  .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+  .catch(next);
 
-export const getUser = (req: Request, res: Response) => User.findById(req.params.id)
+export const getUser = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => User.findById(req.params.id)
   .then((user) => res.send({ data: user }))
-  .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+  .catch(next);
 
-export const createUser = (req: Request, res: Response) => {
+export const createUser = (req: Request, res: Response, next: NextFunction) => {
   const { name, about, avatar } = req.body;
 
   return User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(next);
 };
 
-export const patchUserProfile = (req: Request, res: Response) => {
+export const patchUserProfile = (req: Request, res: Response, next: NextFunction) => {
   const { name, about } = req.body;
 
   // @ts-ignore
@@ -26,10 +30,10 @@ export const patchUserProfile = (req: Request, res: Response) => {
 
   return User.findByIdAndUpdate(userId, { name, about })
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(next);
 };
 
-export const patchUserAvatar = (req: Request, res: Response) => {
+export const patchUserAvatar = (req: Request, res: Response, next: NextFunction) => {
   const { avatar } = req.body;
 
   // @ts-ignore
@@ -37,5 +41,5 @@ export const patchUserAvatar = (req: Request, res: Response) => {
 
   return User.findByIdAndUpdate(userId, { avatar })
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(next);
 };
