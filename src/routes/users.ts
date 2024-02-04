@@ -5,15 +5,15 @@ import {
 
 const router = Router();
 
-// GET /users — возвращает всех пользователей
+// возвращает всех пользователей
 router.get('/', getUsers);
-// GET /users/:userId - возвращает пользователя по _id
+// возвращает пользователя по _id
 router.get('/:id', getUser);
-// POST /users — создаёт пользователя
+// создаёт пользователя
 router.post('/', createUser);
-// PATCH /users/me — обновляет профиль
+// обновляет профиль
 router.patch('/me', patchUserProfile);
-// PATCH /users/me/avatar — обновляет аватар
+// обновляет аватар
 router.patch('/me/avatar', patchUserAvatar);
 
 export default router;

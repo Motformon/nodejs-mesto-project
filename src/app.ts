@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
+import { constants } from 'node:http2';
 import usersRouter from './routes/users';
 import cardsRouter from './routes/cards';
 
@@ -24,19 +25,20 @@ app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
 
 // здесь обрабатываем все ошибки
-app.use((err: any, req: Request, res: Response) => {
-  // если у ошибки нет статуса, выставляем 500
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  const { statusCode = constants.HTTP_STATUS_INTERNAL_SERVER_ERROR, message } = err;
 
-  const { statusCode = 500, message } = err;
-
-  res
-    .status(statusCode)
-    .send({
-      // проверяем статус и выставляем сообщение в зависимости от него
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка'
-        : message,
-    });
+  if (res.status) {
+    res
+      .status(statusCode)
+      .send({
+        message: statusCode === constants.HTTP_STATUS_INTERNAL_SERVER_ERROR
+          ? 'На сервере произошла ошибка'
+          : message,
+      });
+  } else {
+    next(err);
+  }
 });
 
 app.listen(PORT, () => {

@@ -9,35 +9,32 @@ interface ICard {
 }
 
 const cardSchema = new Schema<ICard>({
-  // name — имя карточки, строка от 2 до 30 символов, обязательное поле;
+  // name — имя карточки
   name: {
     type: String,
     required: true,
     maxlength: 30,
     minlength: 2,
   },
-  // link — ссылка на картинку, строка, обязательно поле.
+  // link — ссылка на картинку
   link: {
     type: String,
     required: true,
   },
-  // owner — ссылка на модель автора карточки, тип ObjectId, обязательное поле;
+  // owner — ссылка на модель автора карточки
   owner: {
     type: Schema.Types.ObjectId,
     required: true,
   },
-  // likes — список лайкнувших пост пользователей, массив ObjectId,
-  // по умолчанию — пустой массив (поле default);
+  // likes — список лайкнувших пост пользователей
   likes: {
     type: [Schema.Types.ObjectId],
-    required: true,
     default: [],
   },
-  // createdAt — дата создания, тип Date, значение по умолчанию Date.now.
+  // createdAt — дата создания,
   createdAt: {
     type: Date,
-    required: true,
-    default: Date.now(),
+    default: Date.now,
   },
 });
 

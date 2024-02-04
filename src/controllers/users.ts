@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { Error } from 'mongoose';
 
 import User from '../models/user';
 import NotFoundError from '../errors/NotFoundError';
@@ -31,7 +32,7 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
   return User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.about === 'ValidationError' || err.avatar === 'ValidationError') {
+      if (err instanceof Error.ValidationError) {
         next(new IncorrectDataError('Переданы некорректные данные при создании пользователя.'));
       } else {
         next(err);
@@ -44,13 +45,13 @@ export const patchUserProfile = (req: Request, res: Response, next: NextFunction
 
   // @ts-ignore
   const userId = req.user._id;
-  return User.findByIdAndUpdate(userId, { name, about })
+  return User.findByIdAndUpdate(userId, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       notFoundUserError(user);
       return res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.about === 'ValidationError') {
+      if (err instanceof Error.ValidationError) {
         next(new IncorrectDataError('Переданы некорректные данные при обновлении профиля.'));
       } else {
         next(err);
@@ -64,13 +65,13 @@ export const patchUserAvatar = (req: Request, res: Response, next: NextFunction)
   // @ts-ignore
   const userId = req.user._id;
 
-  return User.findByIdAndUpdate(userId, { avatar })
+  return User.findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
     .then((user) => {
       notFoundUserError(user);
       return res.send({ data: user });
     })
     .catch((err) => {
-      if (err.avatar === 'ValidationError') {
+      if (err instanceof Error.ValidationError) {
         next(new IncorrectDataError('Переданы некорректные данные при обновлении аватара.'));
       } else {
         next(err);
