@@ -46,7 +46,7 @@ export const likeCard = (req: Request, res: Response, next: NextFunction) => {
   return Card.findByIdAndUpdate(
     cardId,
     { $addToSet: { likes: userId } },
-    { new: true, runValidators: true },
+    { new: true },
   )
     .then((card) => {
       if (!card) {
@@ -55,7 +55,7 @@ export const likeCard = (req: Request, res: Response, next: NextFunction) => {
       return res.send({ data: card });
     })
     .catch((err) => {
-      if (err instanceof Error.CastError || err instanceof Error.ValidationError) {
+      if (err instanceof Error.CastError) {
         next(new IncorrectDataError('Переданы некорректные данные для постановки лайка.'));
       } else {
         next(err);
@@ -71,7 +71,7 @@ export const dislikeCard = (req: Request, res: Response, next: NextFunction) => 
   return Card.findByIdAndUpdate(
     cardId,
     { $pull: { likes: userId } },
-    { new: true, runValidators: true },
+    { new: true },
   )
     .then((card) => {
       if (!card) {
@@ -80,7 +80,7 @@ export const dislikeCard = (req: Request, res: Response, next: NextFunction) => 
       return res.send({ data: card });
     })
     .catch((err) => {
-      if (err instanceof Error.CastError || err instanceof Error.ValidationError) {
+      if (err instanceof Error.CastError) {
         next(new IncorrectDataError('Переданы некорректные данные для cнятии лайка.'));
       } else {
         next(err);
