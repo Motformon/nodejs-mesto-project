@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import { constants } from 'node:http2';
 import usersRouter from './routes/users';
 import cardsRouter from './routes/cards';
+import NotFoundError from './errors/NotFoundError';
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -23,6 +24,10 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  next(new NotFoundError('Ошибка 404 роут не найден'));
+});
 
 // здесь обрабатываем все ошибки
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
