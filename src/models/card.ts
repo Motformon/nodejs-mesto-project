@@ -24,13 +24,13 @@ const cardSchema = new Schema<ICard>({
   // owner — ссылка на модель автора карточки
   owner: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'user',
     required: true,
   },
   // likes — список лайкнувших пост пользователей
   likes: {
     type: [Schema.Types.ObjectId],
-    ref: 'User',
+    ref: 'user',
     default: [],
   },
   // createdAt — дата создания,

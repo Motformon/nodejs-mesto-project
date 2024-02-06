@@ -24,7 +24,13 @@ export const getUser = (
     notFoundUserError(user);
     return res.send({ data: user });
   })
-  .catch(next);
+  .catch((err) => {
+    if (err instanceof Error.CastError) {
+      next(new IncorrectDataError('Переданы некорректные данные для получения пользователя.'));
+    } else {
+      next(err);
+    }
+  });
 
 export const createUser = (req: Request, res: Response, next: NextFunction) => {
   const { name, about, avatar } = req.body;

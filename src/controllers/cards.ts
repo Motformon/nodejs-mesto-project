@@ -36,7 +36,13 @@ export const deleteCard = (
     }
     return res.send({ data: card });
   })
-  .catch(next);
+  .catch((err) => {
+    if (err instanceof Error.CastError) {
+      next(new IncorrectDataError('Переданы некорректные данные для удаления карточки.'));
+    } else {
+      next(err);
+    }
+  });
 
 export const likeCard = (req: Request, res: Response, next: NextFunction) => {
   // @ts-ignore
