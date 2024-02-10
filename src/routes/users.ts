@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-  createUser, getUser, getUsers, patchUserProfile, patchUserAvatar,
+  getUser, getUsers, patchUserProfile, patchUserAvatar, getUserMe,
 } from '../controllers/users';
 
 const router = Router();
@@ -9,8 +9,8 @@ const router = Router();
 router.get('/', getUsers);
 // возвращает пользователя по _id
 router.get('/:id', getUser);
-// создаёт пользователя
-router.post('/', createUser);
+// возвращает информацию о текущем пользователе
+router.get('/me', getUserMe);
 // обновляет профиль
 router.patch('/me', patchUserProfile);
 // обновляет аватар
