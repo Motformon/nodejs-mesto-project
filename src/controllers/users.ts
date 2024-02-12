@@ -39,7 +39,7 @@ export const getUserMe = (
   req: Request,
   res: Response,
   next: NextFunction,
-) => User.findById(req.params.id)
+) => User.findById(req?.user?._id)
   .then((user) => {
     notFoundUserError(user);
     return res.send({
@@ -78,7 +78,6 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
 export const patchUserProfile = (req: Request, res: Response, next: NextFunction) => {
   const { name, about } = req.body;
 
-  // @ts-ignore
   const userId = req.user._id;
   return User.findByIdAndUpdate(userId, { name, about }, { new: true, runValidators: true })
     .then((user) => {
@@ -97,7 +96,6 @@ export const patchUserProfile = (req: Request, res: Response, next: NextFunction
 export const patchUserAvatar = (req: Request, res: Response, next: NextFunction) => {
   const { avatar } = req.body;
 
-  // @ts-ignore
   const userId = req.user._id;
 
   return User.findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })

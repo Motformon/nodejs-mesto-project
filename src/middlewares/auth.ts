@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import UnauthorizedError from '../errors/UnauthorizedError';
 
+// @ts-ignore
 interface SessionRequest extends Request {
     user?: string | JwtPayload;
 }

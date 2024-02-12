@@ -54,7 +54,7 @@ const userSchema = new Schema<IUser, UserModel>({
 });
 
 userSchema.static('findUserByCredentials', function findUserByCredentials(email: string, password: string) {
-  return this.findOne({ email }).then((user) => {
+  return this.findOne({ email }).select('+password').then((user) => {
     if (!user) {
       return Promise.reject(new Error('Неправильные почта или пароль'));
     }
