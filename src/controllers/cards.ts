@@ -4,6 +4,7 @@ import { Error } from 'mongoose';
 import Card from '../models/card';
 import IncorrectDataError from '../errors/IncorrectDataError';
 import NotFoundError from '../errors/NotFoundError';
+import ForbiddenError from '../errors/ForbiddenError';
 
 export const getCards = (req: Request, res: Response, next: NextFunction) => Card.find({})
   .then((cards) => res.send({ data: cards }))
@@ -31,7 +32,9 @@ export const deleteCard = (
 ) => Card.findByIdAndRemove(req.params.cardId)
   .then((card) => {
     if (!card) {
-      throw new NotFoundError('Карточка с указанным _id не найдена.');
+      return next(new NotFoundError('Карточка с указанным _id не найдена.'));
+    } else if(card.owner !== req.user._id) {
+      return next(new ForbiddenError('Нет прав.'));
     }
     return res.send({ data: card });
   })

@@ -22,8 +22,10 @@ export const getUser = (
   req: Request,
   res: Response,
   next: NextFunction,
-) => User.findById(req.params.id)
-  .then((user) => {
+) => User.findOne({
+  _id: req.params.id,
+  owner: req?.user?._id
+}).then((user) => {
     notFoundUserError(user);
     return res.send({ data: user });
   })
