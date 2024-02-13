@@ -8,12 +8,6 @@ import NotFoundError from '../errors/NotFoundError';
 import IncorrectDataError from '../errors/IncorrectDataError';
 import UnauthorizedError from '../errors/UnauthorizedError';
 
-const notFoundUserError = (user: any) => {
-  if (!user) {
-    throw new NotFoundError('Нет пользователя с таким id');
-  }
-};
-
 export const getUsers = (req: Request, res: Response, next: NextFunction) => User.find({})
   .then((users) => res.send({ data: users }))
   .catch(next);
@@ -24,11 +18,13 @@ export const getUser = (
   next: NextFunction,
 ) => User.findOne({
   _id: req.params.id,
-  owner: req?.user?._id
+  owner: req?.user?._id,
 }).then((user) => {
-    notFoundUserError(user);
-    return res.send({ data: user });
-  })
+  if (!user) {
+    return next(new NotFoundError('Нет пользователя с таким id'));
+  }
+  return res.send({ data: user });
+})
   .catch((err) => {
     if (err instanceof Error.CastError) {
       next(new IncorrectDataError('Переданы некорректные данные для получения пользователя.'));
@@ -43,7 +39,9 @@ export const getUserMe = (
   next: NextFunction,
 ) => User.findById(req?.user?._id)
   .then((user) => {
-    notFoundUserError(user);
+    if (!user) {
+      return next(new NotFoundError('Нет пользователя с таким id'));
+    }
     return res.send({
       data: {
         avatar: user?.avatar, name: user?.name, about: user?.about, email: user?.email,
@@ -83,7 +81,9 @@ export const patchUserProfile = (req: Request, res: Response, next: NextFunction
   const userId = req.user._id;
   return User.findByIdAndUpdate(userId, { name, about }, { new: true, runValidators: true })
     .then((user) => {
-      notFoundUserError(user);
+      if (!user) {
+        return next(new NotFoundError('Нет пользователя с таким id'));
+      }
       return res.send({ data: user });
     })
     .catch((err) => {
@@ -102,7 +102,9 @@ export const patchUserAvatar = (req: Request, res: Response, next: NextFunction)
 
   return User.findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
     .then((user) => {
-      notFoundUserError(user);
+      if (!user) {
+        return next(new NotFoundError('Нет пользователя с таким id'));
+      }
       return res.send({ data: user });
     })
     .catch((err) => {

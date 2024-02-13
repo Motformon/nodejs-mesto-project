@@ -25,26 +25,45 @@ export const createCard = (req: Request, res: Response, next: NextFunction) => {
     });
 };
 
-export const deleteCard = (
+export const deleteCard = async (
   req: Request,
   res: Response,
   next: NextFunction,
-) => Card.findByIdAndRemove(req.params.cardId)
-  .then((card) => {
-    if (!card) {
-      return next(new NotFoundError('Карточка с указанным _id не найдена.'));
-    } else if(card.owner !== req.user._id) {
-      return next(new ForbiddenError('Нет прав.'));
-    }
-    return res.send({ data: card });
-  })
-  .catch((err) => {
-    if (err instanceof Error.CastError) {
-      next(new IncorrectDataError('Переданы некорректные данные для удаления карточки.'));
-    } else {
-      next(err);
-    }
-  });
+) => {
+  const cardData = await Card.findById(req.params.cardId)
+    .then((card) => card)
+    .catch((err) => {
+      if (err instanceof Error.CastError) {
+        next(new IncorrectDataError('Переданы некорректные данные для удаления карточки.'));
+      } else {
+        next(err);
+      }
+    });
+
+  if (!cardData) {
+    return next(new NotFoundError('Карточка с указанным _id не найдена.'));
+  }
+
+  if (cardData?.owner && cardData?.owner.toString() !== req.user._id) {
+    return next(new ForbiddenError('Нет прав.'));
+  }
+
+  return Card.deleteOne({ _id: req.params.cardId })
+    .then((card) => {
+      if (!card) {
+        return next(new NotFoundError('Карточка с указанным _id не найдена.'));
+      }
+
+      return res.send({ data: cardData });
+    })
+    .catch((err) => {
+      if (err instanceof Error.CastError) {
+        next(new IncorrectDataError('Переданы некорректные данные для удаления карточки.'));
+      } else {
+        next(err);
+      }
+    });
+};
 
 export const likeCard = (req: Request, res: Response, next: NextFunction) => {
   const userId = req.user._id;
@@ -57,7 +76,7 @@ export const likeCard = (req: Request, res: Response, next: NextFunction) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Передан несуществующий _id карточки.');
+        return next(new NotFoundError('Передан несуществующий _id карточки.'));
       }
       return res.send({ data: card });
     })
@@ -82,7 +101,7 @@ export const dislikeCard = (req: Request, res: Response, next: NextFunction) => 
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Передан несуществующий _id карточки.');
+        return next(new NotFoundError('Передан несуществующий _id карточки.'));
       }
       return res.send({ data: card });
     })
