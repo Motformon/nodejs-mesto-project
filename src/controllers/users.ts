@@ -7,6 +7,7 @@ import User from '../models/user';
 import NotFoundError from '../errors/NotFoundError';
 import IncorrectDataError from '../errors/IncorrectDataError';
 import UnauthorizedError from '../errors/UnauthorizedError';
+import ConflictError from '../errors/ConflictError';
 
 export const getUsers = (req: Request, res: Response, next: NextFunction) => User.find({})
   .then((users) => res.send({ data: users }))
@@ -67,7 +68,9 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
     })
       .then((user) => res.send({ data: user }))
       .catch((err) => {
-        if (err instanceof Error.ValidationError) {
+        if (err.code === 11000) {
+          next(new ConflictError('Такой email уже зарегистрирован.'));
+        } else if (err instanceof Error.ValidationError) {
           next(new IncorrectDataError('Переданы некорректные данные при создании пользователя.'));
         } else {
           next(err);
