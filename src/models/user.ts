@@ -50,6 +50,14 @@ const userSchema = new Schema<IUser, UserModel>({
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    validate: {
+      validator: (v: string) => validator.isURL(v, {
+        protocols: ['http', 'https'],
+        require_protocol: true,
+        require_valid_protocol: true,
+      }),
+      message: 'Неправильный формат ссылки',
+    },
   },
 });
 
