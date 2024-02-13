@@ -1,6 +1,9 @@
 import express, { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
 import { constants } from 'node:http2';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+
 import usersRouter from './routes/users';
 import cardsRouter from './routes/cards';
 import NotFoundError from './errors/NotFoundError';
@@ -12,6 +15,14 @@ const { PORT = 3000 } = process.env;
 const app = express();
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+});
+
+app.use(limiter);
+app.use(helmet());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -25,11 +36,11 @@ app.use(auth);
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
 
-app.use(logger.errorLogger);
-
 app.use((req: Request, res: Response, next: NextFunction) => {
   next(new NotFoundError('Ошибка 404 роут не найден'));
 });
+
+app.use(logger.errorLogger);
 
 // здесь обрабатываем все ошибки
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
