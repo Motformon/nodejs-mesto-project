@@ -4,6 +4,7 @@ import { celebrate, Joi } from 'celebrate';
 import {
   getCards, createCard, deleteCard, likeCard, dislikeCard,
 } from '../controllers/cards';
+import regexURL from '../helpers';
 
 const router = Router();
 
@@ -13,7 +14,7 @@ router.get('/', getCards);
 router.post('/', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
-    link: Joi.string().min(2).required(),
+    link: Joi.string().min(2).required().pattern(regexURL),
   }),
 }), createCard);
 // удаляет карточку по идентификатору

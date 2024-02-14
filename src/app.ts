@@ -10,6 +10,7 @@ import NotFoundError from './errors/NotFoundError';
 import { createUser, login } from './controllers/users';
 import auth from './middlewares/auth';
 import logger from './middlewares/logger';
+import regexURL from './helpers';
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -41,7 +42,7 @@ app.post('/signup', celebrate({
     password: Joi.string().required().min(6),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(200),
-    avatar: Joi.string().min(2),
+    avatar: Joi.string().min(2).pattern(regexURL),
   }),
 }), createUser);
 

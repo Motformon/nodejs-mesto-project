@@ -3,6 +3,7 @@ import { celebrate, Joi } from 'celebrate';
 import {
   getUser, getUsers, patchUserProfile, patchUserAvatar, getUserMe,
 } from '../controllers/users';
+import regexURL from '../helpers';
 
 const router = Router();
 
@@ -26,7 +27,7 @@ router.patch('/me', celebrate({
 // обновляет аватар
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required().min(2),
+    avatar: Joi.string().required().min(2).pattern(regexURL),
   }),
 }), patchUserAvatar);
 
