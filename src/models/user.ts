@@ -31,6 +31,7 @@ const userSchema = new Schema<IUser, UserModel>({
   password: {
     type: String,
     required: true,
+    minlength: 6,
     select: false,
   },
   // name — имя пользователя
