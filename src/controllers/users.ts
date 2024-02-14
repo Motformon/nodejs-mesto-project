@@ -59,15 +59,21 @@ export const getUserMe = (
 
 export const createUser = (req: Request, res: Response, next: NextFunction) => {
   const {
-    name, about, avatar, email,
+    name, about, avatar, email, password,
   } = req.body;
-  const bodyPassword = req.body.password;
 
-  return bcrypt.hash(bodyPassword, 10)
+  return bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     })
-      .then(({ password, ...user }) => res.send({ data: user }))
+      .then((user) => res.send({
+        data: {
+          name: user.name,
+          about: user.about,
+          avatar: user.avatar,
+          email: user.email,
+        },
+      }))
       .catch((err) => {
         if (err.code === 11000) {
           next(new ConflictError('Такой email уже зарегистрирован.'));
